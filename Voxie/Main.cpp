@@ -9,8 +9,12 @@
 #include <cmath>
 #include <string>
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw.h"
+#include "imgui/imgui_impl_opengl3.h"
+
+const unsigned int SCR_WIDTH = 1024;
+const unsigned int SCR_HEIGHT = 700;
 
 using namespace std;
 
@@ -43,17 +47,46 @@ int main() {
 		return -1;
 	}
 
+	// init imgui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+
+	ImGui::StyleColorsDark();
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 330");
+
 	//----------
 	// main loop
 	//----------
 
 	while (!glfwWindowShouldClose(window)) {
+		// setup imgui
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		bool showDemoWindow = true;
+		if (showDemoWindow)
+			ImGui::ShowDemoWindow(&showDemoWindow);
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+
+	//--------
+	// cleanup
+	//--------
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 	return 0;
