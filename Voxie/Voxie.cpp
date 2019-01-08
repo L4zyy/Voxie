@@ -2,8 +2,32 @@
 
 using namespace std;
 
+// variables
+float deltaTime = 0.0f;
+float lastFrameTime = 0.0f;
+bool firstMouse = true;
+float lastX = SCR_WIDTH / 2, lastY = SCR_HEIGHT / 2;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+}
+
+void processInput(GLFWwindow* window, Scene& scene) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		scene.camera.ProcessKeyboard(FORWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		scene.camera.ProcessKeyboard(BACKWARD, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		scene.camera.ProcessKeyboard(LEFT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		scene.camera.ProcessKeyboard(RIGHT, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		scene.camera.ProcessKeyboard(UP, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+		scene.camera.ProcessKeyboard(DOWN, deltaTime);
 }
 
 Voxie::Voxie() {}
@@ -20,7 +44,7 @@ bool Voxie::init() {
 	if (window == nullptr) {
 		cout << "Failed to create main window" << endl;
 		glfwTerminate();
-		return -1;
+		return false;
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -28,56 +52,45 @@ bool Voxie::init() {
 	// init glad
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		cout << "Failed to initialize GLAD" << endl;
-		return -1;
+		return false;
 	}
 
-	// init imgui
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
+	// init GUI
+	if (!guiManager.init(window)) {
+		cout << "Failed to initialize GUI" << endl;
+		return false;
+	}
 
-	ImGui::StyleColorsDark();
+	// init scene
+	mainScene.init();
 
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 330");
+	// configure global opengl state
+	glEnable(GL_DEPTH_TEST);
 
 	return true;
 }
 
 void Voxie::mainLoop() {
 	while (!glfwWindowShouldClose(window)) {
-		// setup imgui
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		// calculate delta time
+		float currentFrameTime = glfwGetTime();
+		deltaTime = currentFrameTime - lastFrameTime;
+		lastFrameTime = currentFrameTime;
+
+		// process input
+		processInput(window, mainScene);
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// imgui components
-		if (ImGui::BeginMainMenuBar()) {
-			if (ImGui::BeginMenu("File")) {
-				if (ImGui::MenuItem("Quit", "Alt+F4")) {
-					glfwSetWindowShouldClose(window, true);
-				}
-				ImGui::EndMenu();
-			}
+		// setup components
+		if (guiManager.setup(window))
+			glfwSetWindowShouldClose(window, true);
+		mainScene.setup();
 
-			if (ImGui::BeginMenu("Edit")) {
-				ImGui::EndMenu();
-			}
-
-			if (ImGui::BeginMenu("Help")) {
-				if (ImGui::MenuItem("Operation Guide")) {}
-				if (ImGui::MenuItem("About")) {}
-				ImGui::EndMenu();
-			}
-
-			ImGui::EndMainMenuBar();
-		}
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		// render components
+		guiManager.render();
+		mainScene.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -85,9 +98,7 @@ void Voxie::mainLoop() {
 }
 
 void Voxie::cleanup() {
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
+	guiManager.cleanup();
 
 	glfwTerminate();
 }

@@ -8,7 +8,10 @@ using namespace std;
 int main() {
 	Voxie app;
 
-	app.init();
+	if (!app.init()) {
+		cout << "Failed to initialize Voxie" << endl;
+		return -1;
+	}
 
 	app.mainLoop();
 
