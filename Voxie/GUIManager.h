@@ -7,13 +7,15 @@
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
-class GUIManager {
-public:
-	GUIManager();
-	bool init(GLFWwindow* window);
-	bool setup(GLFWwindow* window);
-	void cleanup();
-	void render();
-};
+namespace Voxie {
+	class GUIManager {
+	public:
+		GUIManager();
+		bool init(GLFWwindow* window);
+		bool setup(GLFWwindow* window);
+		void cleanup();
+		void render();
+	};
+}
 
 #endif

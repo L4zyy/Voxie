@@ -6,7 +6,7 @@
 using namespace std;
 
 int main() {
-	Voxie app;
+	Voxie::Core app;
 
 	if (!app.init()) {
 		cout << "Failed to initialize Voxie" << endl;

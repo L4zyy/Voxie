@@ -9,19 +9,21 @@
 #include "GUIManager.h"
 #include "Scene.h"
 
-class Voxie {
-public:
-	GLFWwindow* window;
+namespace Voxie {
+	class Core {
+	public:
+		GLFWwindow * window;
 
-	GUIManager guiManager;
-	Scene mainScene;
+		GUIManager guiManager;
+		Scene mainScene;
 
-	Voxie();
+		Core();
 
-	bool init();
-	void mainLoop();
-	void cleanup();
-private:
-};
+		bool init();
+		void mainLoop();
+		void cleanup();
+	private:
+	};
+}
 
 #endif

@@ -6,17 +6,19 @@
 #include "Shader.h"
 #include "Camera.h"
 
-class Scene {
-public:
-	std::vector<Voxel> voxels;
-	Shader shader;
-	Camera camera;
-	unsigned int VAO, VBO;
+namespace Voxie {
+	class Scene {
+	public:
+		std::vector<Voxel> voxels;
+		Shader shader;
+		Camera camera;
+		unsigned int VAO, VBO;
 
-	Scene();
-	void init();
-	void setup();
-	void render();
-};
+		Scene();
+		void init();
+		void setup();
+		void render();
+	};
+}
 
 #endif
