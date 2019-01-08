@@ -15,6 +15,11 @@ namespace Voxie {
 		bool setup(GLFWwindow* window);
 		void cleanup();
 		void render();
+	private:
+		void showDebugInfo(bool open);
+		void showArrowPanel(bool open, float viewY);
+		void showActionBar(bool open, ImVec2 windowPos, ImVec2& size);
+		void showToolBar(bool open, ImVec2 windowPos, ImVec2& size);
 	};
 }
 

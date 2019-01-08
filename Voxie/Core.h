@@ -1,21 +1,13 @@
 #ifndef CORE_H
 #define CORE_H
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <stb_image\stb_image.h>
-
 #include "Global.h"
-#include "GUIManager.h"
-#include "Scene.h"
+#include "Renderer.h"
 
 namespace Voxie {
 	class Core {
 	public:
-		GLFWwindow * window;
-
-		GUIManager guiManager;
-		Scene mainScene;
+		Renderer renderer;
 
 		Core();
 

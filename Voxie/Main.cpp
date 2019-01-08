@@ -3,13 +3,11 @@
 #include "Global.h"
 #include "Core.h"
 
-using namespace std;
-
 int main() {
 	Voxie::Core app;
 
 	if (!app.init()) {
-		cout << "Failed to initialize Voxie" << endl;
+		std::cout << "Failed to initialize Voxie" << std::endl;
 		return -1;
 	}
 

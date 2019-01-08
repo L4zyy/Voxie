@@ -74,4 +74,17 @@ namespace Voxie {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
+
+
+	void GUIManager::showDebugInfo(bool open) {
+	}
+
+	void GUIManager::showArrowPanel(bool open, float viewY) {
+	}
+
+	void GUIManager::showActionBar(bool open, ImVec2 windowPos, ImVec2& size) {
+	}
+
+	void GUIManager::showToolBar(bool open, ImVec2 windowPos, ImVec2& size) {
+	}
 }
