@@ -1,5 +1,5 @@
-#ifndef VOXIE_H
-#define VOXIE_H
+#ifndef CORE_H
+#define CORE_H
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

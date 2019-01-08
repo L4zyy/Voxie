@@ -134,7 +134,7 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Voxel.cpp" />
-    <ClCompile Include="Voxie.cpp" />
+    <ClCompile Include="Core.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -151,7 +151,7 @@
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Voxel.h" />
-    <ClInclude Include="Voxie.h" />
+    <ClInclude Include="Core.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basicShader.frag" />

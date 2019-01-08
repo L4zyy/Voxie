@@ -1,4 +1,4 @@
-#include "Voxie.h"
+#include "Core.h"
 
 namespace Voxie {
 	using namespace std;

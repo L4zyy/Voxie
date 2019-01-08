@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "Global.h"
-#include "Voxie.h"
+#include "Core.h"
 
 using namespace std;
 
