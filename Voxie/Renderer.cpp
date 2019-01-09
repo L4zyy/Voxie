@@ -29,7 +29,9 @@ namespace Voxie {
 			scene.camera.ProcessKeyboard(DOWN, deltaTime);
 	}
 
-	Renderer::Renderer() {}
+	Renderer::Renderer() {
+		guiManager.mainScene = &mainScene;
+	}
 
 	bool Renderer::init() {
 		// init glfw
@@ -74,21 +76,22 @@ namespace Voxie {
 		float currentFrameTime = glfwGetTime();
 		deltaTime = currentFrameTime - lastFrameTime;
 		lastFrameTime = currentFrameTime;
+		FPS = 100.0f;
 
 		// process input
 		processInput(window, mainScene);
 
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// setup components
-		if (guiManager.setup(window))
+		if (guiManager.setup(window, FPS))
 			glfwSetWindowShouldClose(window, true);
 		mainScene.setup();
 
 		// render components
-		guiManager.render();
 		mainScene.render();
+		guiManager.render();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

@@ -17,8 +17,19 @@ namespace Voxie {
 	}
 
 	// return if app should close window
-	bool GUIManager::setup(GLFWwindow* window) {
-		bool windowShouldClose = false;
+	bool GUIManager::setup(GLFWwindow* window, float FPS) {
+		static ImVec2 mainMenuBarSize;
+		static ImVec2 debugInfoSize;
+		static ImVec2 actionBarSize;
+		static ImVec2 toolBarSize;
+
+		static bool windowShouldClose = false;
+
+		static bool displayDemowindow = false;
+		static bool displayDebugInfo = true;
+		static bool displayArrowPanel = true;
+		static bool displayActionBar = true;
+		static bool displayToolBar = true;
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -48,18 +59,35 @@ namespace Voxie {
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::BeginMenu("Debug")) {
-				if (ImGui::MenuItem("Demo Window")) {
-				}
-				if (ImGui::MenuItem("Debug Info")) {
-				}
-				if (ImGui::MenuItem("Arrow Panel")) {
-				}
+			if (ImGui::BeginMenu("Tools")) {
+				if (ImGui::MenuItem("Demo Window", nullptr, displayDemowindow))
+					displayDemowindow = !displayDemowindow;
+				if (ImGui::MenuItem("Debug Info", nullptr, displayDebugInfo))
+					displayDebugInfo = !displayDebugInfo;
+				if (ImGui::MenuItem("Arrow Panel", nullptr, displayArrowPanel))
+					displayArrowPanel = !displayArrowPanel;
+				if (ImGui::MenuItem("Action Bar", nullptr, displayActionBar))
+					displayActionBar = !displayActionBar;
+				if (ImGui::MenuItem("Tool Bar", nullptr, displayToolBar))
+					displayToolBar = !displayToolBar;
 				ImGui::EndMenu();
 			}
 
+			// display FPS
+			int indent = 100;
+			ImGui::Indent(ImGui::GetIO().DisplaySize.x - indent);
+			ImGui::Text("FPS: %.1f", FPS);
+
+			mainMenuBarSize = ImGui::GetWindowSize();
+
 			ImGui::EndMainMenuBar();
 		}
+
+		if (displayDemowindow) ImGui::ShowDemoWindow(&displayDemowindow);
+		if (displayDebugInfo) showDebugInfo(&displayDebugInfo, mainMenuBarSize.y + actionBarSize.y, debugInfoSize);
+		if (displayArrowPanel) showArrowPanel(&displayArrowPanel, mainMenuBarSize.y + actionBarSize.y);
+		if (displayActionBar) showActionBar(&displayActionBar, ImVec2(0.0f, mainMenuBarSize.y), actionBarSize);
+		if (displayToolBar) showToolBar(&displayToolBar, ImVec2(0.0f, mainMenuBarSize.y + actionBarSize.y), toolBarSize);
 
 		return windowShouldClose;
 	}
@@ -76,15 +104,179 @@ namespace Voxie {
 	}
 
 
-	void GUIManager::showDebugInfo(bool open) {
-	}
+	void GUIManager::showDebugInfo(bool* open, float viewY, ImVec2& size) {
+		static const float DISTANCE = 10.0f;
+		static int corner = 3;
+		ImVec2 windowPos = ImVec2((corner & 1) ? ImGui::GetIO().DisplaySize.x - DISTANCE : DISTANCE, (corner & 2) ? ImGui::GetIO().DisplaySize.y - DISTANCE : viewY + DISTANCE);
+		ImVec2 windowPosPivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
+		ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
+		ImGui::SetNextWindowBgAlpha(0.3f);
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.WindowRounding = 10.0f;
 
-	void GUIManager::showArrowPanel(bool open, float viewY) {
-	}
+		if (ImGui::Begin("Debug Info", open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav)) {
+			ImGui::Text("Debug Information");
+			ImGui::Separator();
+			ImGui::Text("Mouse Position: (%.1f, %.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
+			ImGui::Text("Camera Position: (%.1f, %.1f, %.1f)", mainScene->camera.Position.x, mainScene->camera.Position.y, mainScene->camera.Position.z);
 
-	void GUIManager::showActionBar(bool open, ImVec2 windowPos, ImVec2& size) {
-	}
+			if (ImGui::BeginPopupContextWindow()) {
+				if (ImGui::MenuItem("Top Left", nullptr, corner == 0)) corner = 0;
+				if (ImGui::MenuItem("Top Right", nullptr, corner == 1)) corner = 1;
+				if (ImGui::MenuItem("Bottom Left", nullptr, corner == 2)) corner = 2;
+				if (ImGui::MenuItem("Bottom Right", nullptr, corner == 3)) corner = 3;
+				if (open && ImGui::MenuItem("Close")) *open = false;
 
-	void GUIManager::showToolBar(bool open, ImVec2 windowPos, ImVec2& size) {
+				ImGui::EndPopup();
+			}
+
+			size = ImGui::GetWindowSize();
+
+			ImGui::End();
+		}
+	}
+	void GUIManager::showArrowPanel(bool* open, float viewY) {
+		static const float DISTANCE = 10.0f;
+		static int corner = 1;
+		ImVec2 windowPos = ImVec2(ImGui::GetIO().DisplaySize.x - DISTANCE, viewY + DISTANCE);
+		ImVec2 windowPosPivot = ImVec2(1.0f, 0.0f);
+		ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
+		ImGui::SetNextWindowBgAlpha(0.1f);
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.WindowRounding = 10.0f;
+
+		if (ImGui::Begin("Arrow Panel", open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav)) {
+			if (ImGui::Button(arrowMode ? "Pos Mode" : "Eye Mode"))
+				arrowMode = !arrowMode;
+
+			static float arrowSize = ImGui::GetFrameHeight();
+
+			ImGui::Separator();
+			ImGui::Indent(arrowSize + 2.0f);
+			ImGui::ArrowButton("ArrowFront", ImGuiDir_Up);
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
+			}
+			ImGui::Unindent();
+			ImGui::ArrowButton("ArrowLeft", ImGuiDir_Left);
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
+			}
+			ImGui::SameLine();
+			ImGui::Dummy(ImVec2(arrowSize -12.0f, arrowSize));
+			ImGui::SameLine();
+			ImGui::ArrowButton("ArrowRight", ImGuiDir_Right);
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
+			}
+			ImGui::Indent(arrowSize + 2.0f);
+			ImGui::ArrowButton("ArrowBack", ImGuiDir_Down);
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
+			}
+			ImGui::Unindent();
+			ImGui::Indent(7.5f);
+			ImGui::ArrowButton("ArrowUp", ImGuiDir_Up);
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
+			}
+			ImGui::SameLine();
+			ImGui::ArrowButton("ArrowDown", ImGuiDir_Down);
+			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
+			}
+			ImGui::Unindent();
+
+			if (ImGui::BeginPopupContextWindow()) {
+				if (ImGui::MenuItem("Top Left", nullptr, corner == 0)) corner = 0;
+				if (ImGui::MenuItem("Top Right", nullptr, corner == 1)) corner = 1;
+				if (ImGui::MenuItem("Bottom Left", nullptr, corner == 2)) corner = 2;
+				if (ImGui::MenuItem("Bottom Right", nullptr, corner == 3)) corner = 3;
+				if (open && ImGui::MenuItem("Close")) *open = false;
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::End();
+		}
+	}
+	void GUIManager::showActionBar(bool* open, ImVec2 windowPos, ImVec2& size) {
+		static const float DISTANCE = 10.0f;
+		ImGui::SetNextWindowPos(windowPos, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, 40.0f));
+		ImGui::SetNextWindowBgAlpha(1.0f);
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.Colors[ImGuiCol_WindowBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
+		style.WindowRounding = 0.0f;
+
+		if (ImGui::Begin("Action Bar", open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav)) {
+			if (ImGui::Button("<")) {}
+			ImGui::SameLine();
+			if (ImGui::Button(">")) {}
+
+			size = ImGui::GetWindowSize();
+
+			ImGui::End();
+		}
+
+		ImGui::StyleColorsDark();
+	}
+	void GUIManager::showToolBar(bool* open, ImVec2 windowPos, ImVec2& size) {
+		static const float MIN_WIDTH = 250.0f;
+		ImGui::SetNextWindowPos(windowPos, ImGuiCond_FirstUseEver);
+		ImGui::SetNextWindowSizeConstraints(ImVec2(MIN_WIDTH, ImGui::GetIO().DisplaySize.y - windowPos.y), ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y - windowPos.y));
+		ImGui::SetNextWindowBgAlpha(1.0f);
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.WindowRounding = 0.0f;
+
+		if (ImGui::Begin("Tool Bar", open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav)) {
+			// color editor
+			{
+				static ImVec4 editorColor = ImColor(255, 255, 255);
+				ImGui::ColorEdit3("Current Color", (float*)&editorColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_Float);
+
+				static bool initPalette = false;
+				static const int paletteColorNumber = 32;
+				static ImVec4 paletteColors[paletteColorNumber];
+				if (!initPalette) {
+					for (size_t i = 0; i < paletteColorNumber; i++) {
+						ImGui::ColorConvertHSVtoRGB(i / 31.0f, 0.8f, 0.8f, paletteColors[i].x, paletteColors[i].y, paletteColors[i].z);
+						paletteColors[i].w = 1.0f;
+					}
+
+					if (!initPalette)
+						initPalette = true;
+				}
+
+				for (size_t i = 0; i < paletteColorNumber; i++) {
+					ImGui::PushID(i);
+
+					if ((i % (paletteColorNumber / 4)) != 0)
+						ImGui::SameLine();
+					if (ImGui::ColorButton("##palette", paletteColors[i], ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20)))
+						editorColor = paletteColors[i];
+
+					ImGui::PopID();
+				}
+			}
+
+			ImGui::NewLine();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			// properties
+			{
+				if (ImGui::CollapsingHeader("Properties")) {
+					ImGui::Spacing();
+					ImGui::Text("Color: ");
+					ImGui::SameLine();
+					ImVec4 voxelColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+					if (ImGui::ColorEdit3("Properties##Color", (float*)&voxelColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_Float)) {}
+
+					ImGui::Text("Position: ");
+					ImGui::SameLine();
+					ImGui::Text("Position");
+				}
+			}
+
+			size = ImGui::GetWindowSize();
+
+			ImGui::End();
+
+		}
 	}
 }

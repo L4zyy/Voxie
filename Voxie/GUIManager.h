@@ -2,6 +2,7 @@
 #define GUI_MANAGER_H
 
 #include "Global.h"
+#include "Scene.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
@@ -10,16 +11,20 @@
 namespace Voxie {
 	class GUIManager {
 	public:
+		Scene* mainScene;
+
+		bool arrowMode;
+
 		GUIManager();
 		bool init(GLFWwindow* window);
-		bool setup(GLFWwindow* window);
+		bool setup(GLFWwindow* window, float FPS);
 		void cleanup();
 		void render();
 	private:
-		void showDebugInfo(bool open);
-		void showArrowPanel(bool open, float viewY);
-		void showActionBar(bool open, ImVec2 windowPos, ImVec2& size);
-		void showToolBar(bool open, ImVec2 windowPos, ImVec2& size);
+		void showDebugInfo(bool* open, float viewY, ImVec2& size);
+		void showArrowPanel(bool* open, float viewY);
+		void showActionBar(bool* open, ImVec2 windowPos, ImVec2& size);
+		void showToolBar(bool* open, ImVec2 windowPos, ImVec2& size);
 	};
 }
 

@@ -17,6 +17,8 @@ namespace Voxie {
 		GUIManager guiManager;
 		Scene mainScene;
 
+		float FPS;
+
 		Renderer();
 
 		bool init();

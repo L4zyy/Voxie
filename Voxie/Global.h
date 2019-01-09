@@ -15,8 +15,8 @@
 #include <glad/glad.h>
 
 namespace Voxie {
-	const unsigned int SCR_WIDTH = 1024;
-	const unsigned int SCR_HEIGHT = 700;
+	const unsigned int SCR_WIDTH = 1280;
+	const unsigned int SCR_HEIGHT = 720;
 }
 
 #endif
