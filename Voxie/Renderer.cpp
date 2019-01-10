@@ -1,10 +1,6 @@
 #include "Renderer.h"
 
 namespace Voxie {
-	// variables
-	float deltaTime = 0.0f;
-	float lastFrameTime = 0.0f;
-
 	void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 		glViewport(0, 0, width, height);
 		Renderer* renderer = reinterpret_cast<Renderer*>(glfwGetWindowUserPointer(window));
@@ -12,22 +8,9 @@ namespace Voxie {
 		renderer->scr_height = height;
 	}
 
-	void processInput(GLFWwindow* window, Scene& scene) {
+	void processInput(GLFWwindow* window) {
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
-
-		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			scene.camera.ProcessKeyboard(FORWARD, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			scene.camera.ProcessKeyboard(BACKWARD, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			scene.camera.ProcessKeyboard(LEFT, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			scene.camera.ProcessKeyboard(RIGHT, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-			scene.camera.ProcessKeyboard(UP, deltaTime);
-		if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-			scene.camera.ProcessKeyboard(DOWN, deltaTime);
 	}
 
 	Renderer::Renderer() {
@@ -83,7 +66,7 @@ namespace Voxie {
 		updateFPS();
 
 		// process input
-		processInput(window, mainScene);
+		processInput(window);
 
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -19,6 +19,10 @@ namespace Voxie {
 
 		float scr_width;
 		float scr_height;
+
+		float deltaTime;
+		float lastFrameTime;
+
 		float FPS;
 
 		Renderer();

@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 namespace Voxie {
-	Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM) {
+	Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), Zoom(ZOOM) {
 		Position = position;
 		WorldUp = up;
 		Yaw = yaw;
@@ -9,7 +9,7 @@ namespace Voxie {
 		updateCameraVectors();
 	}
 
-	Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM) {
+	Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), Zoom(ZOOM) {
 		Position = glm::vec3(posX, posY, posZ);
 		WorldUp = glm::vec3(upX, upY, upZ);
 		Yaw = yaw;
@@ -21,28 +21,30 @@ namespace Voxie {
 		return glm::lookAt(Position, Position + Front, Up);
 	}
 
-	void Camera::ProcessKeyboard(Direction direction, float deltaTime) {
-		float velocity = MovementSpeed * deltaTime;
+	void Camera::changePosition(Direction direction, float offset) {
 		if (direction == FORWARD)
-			Position += Front * velocity;
+			Position += Front * offset;
 		if (direction == BACKWARD)
-			Position -= Front * velocity;
+			Position -= Front * offset;
 		if (direction == LEFT)
-			Position -= Right * velocity;
+			Position -= Right * offset;
 		if (direction == RIGHT)
-			Position += Right * velocity;
+			Position += Right * offset;
 		if (direction == UP)
-			Position += WorldUp * velocity;
+			Position += WorldUp * offset;
 		if (direction == DOWN)
-			Position -= WorldUp * velocity;
+			Position -= WorldUp * offset;
 	}
 
-	void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch) {
-		xoffset *= MouseSensitivity;
-		yoffset *= MouseSensitivity;
-
-		Yaw += xoffset;
-		Pitch += yoffset;
+	void Camera::changeDirection(Direction direction, float offset, GLboolean constrainPitch) {
+		if (direction == UP)
+			Pitch += offset;
+		else if (direction == DOWN)
+			Pitch -= offset;
+		else if (direction == LEFT)
+			Yaw -= offset;
+		else if (direction == RIGHT)
+			Yaw += offset;
 
 		if (constrainPitch) {
 			if (Pitch > 89.0f)
@@ -54,9 +56,13 @@ namespace Voxie {
 		updateCameraVectors();
 	}
 
-	void Camera::ProcessMouseScroll(float yoffset) {
+	void Camera::changeZoom(Direction direction, float offset) {
 		if (Zoom >= 1.0f && Zoom <= 45.0f)
-			Zoom -= yoffset;
+			if (direction == FORWARD)
+				Zoom -= offset;
+			else if (direction == BACKWARD)
+				Zoom += offset;
+
 		if (Zoom <= 1.0f)
 			Zoom = 1.0f;
 		if (Zoom >= 45.0f)

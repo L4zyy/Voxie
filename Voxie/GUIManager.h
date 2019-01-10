@@ -13,7 +13,11 @@ namespace Voxie {
 	class GUIManager {
 	public:
 		Renderer* renderer;
+
 		bool arrowMode;
+		float camSpeed;
+		float eyeSpeed;
+		float zoomSpeed;
 
 		GUIManager();
 		bool init(GLFWwindow* window);
