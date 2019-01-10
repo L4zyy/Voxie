@@ -1,16 +1,19 @@
 #include "Renderer.h"
 
 namespace Voxie {
-	void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+	void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 		glViewport(0, 0, width, height);
 		Renderer* renderer = reinterpret_cast<Renderer*>(glfwGetWindowUserPointer(window));
 		renderer->scr_width = width;
 		renderer->scr_height = height;
 	}
-
-	void processInput(GLFWwindow* window) {
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
+	}
+	void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+		Renderer* renderer = reinterpret_cast<Renderer*>(glfwGetWindowUserPointer(window));
+		renderer->mainScene.camera.changeZoom(yoffset >= 0 ? FORWARD : BACKWARD, abs(yoffset));
 	}
 
 	Renderer::Renderer() {
@@ -35,7 +38,6 @@ namespace Voxie {
 		}
 		glfwMakeContextCurrent(window);
 		glfwSetWindowUserPointer(window, this);
-		glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 		// init glad
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -55,6 +57,13 @@ namespace Voxie {
 		// configure global opengl state
 		glEnable(GL_DEPTH_TEST);
 
+		// install callbacks
+		{
+			glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+			glfwSetKeyCallback(window, keyCallback);
+			glfwSetScrollCallback(window, scrollCallback);
+		}
+
 		return true;
 	}
 
@@ -64,9 +73,6 @@ namespace Voxie {
 		deltaTime = currentFrameTime - lastFrameTime;
 		lastFrameTime = currentFrameTime;
 		updateFPS();
-
-		// process input
-		processInput(window);
 
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

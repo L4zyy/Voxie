@@ -15,6 +15,7 @@ namespace Voxie {
 		Renderer* renderer;
 
 		bool arrowMode;
+
 		float camSpeed;
 		float eyeSpeed;
 		float zoomSpeed;
