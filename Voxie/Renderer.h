@@ -25,6 +25,8 @@ namespace Voxie {
 
 		float FPS;
 
+		float midButtonSpeed;
+
 		Renderer();
 
 		bool init();
@@ -32,6 +34,7 @@ namespace Voxie {
 		void cleanup();
 	private:
 		void updateFPS();
+		void processSceneDragging();
 	};
 }
 

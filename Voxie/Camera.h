@@ -28,6 +28,7 @@ namespace Voxie {
 		void changePosition(Direction direction, float offset);
 		void changeDirection(Direction direction, float offset, GLboolean constrainPitch = true);
 		void changeZoom(Direction direction, float offset);
+		void processMidButtonMovement(float xoffset, float yoffset);
 
 	private:
 		void updateCameraVectors();

@@ -15,11 +15,15 @@ namespace Voxie {
 		Renderer* renderer = reinterpret_cast<Renderer*>(glfwGetWindowUserPointer(window));
 		renderer->mainScene.camera.changeZoom(yoffset >= 0 ? FORWARD : BACKWARD, abs(yoffset));
 	}
+	void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+	}
 
 	Renderer::Renderer() {
 		guiManager.renderer = this;
 		scr_width = SCR_WIDTH;
 		scr_height = SCR_HEIGHT;
+
+		midButtonSpeed = 2.5f;
 	}
 
 	bool Renderer::init() {
@@ -62,6 +66,7 @@ namespace Voxie {
 			glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 			glfwSetKeyCallback(window, keyCallback);
 			glfwSetScrollCallback(window, scrollCallback);
+			glfwSetMouseButtonCallback(window, mouseButtonCallback);
 		}
 
 		return true;
@@ -81,6 +86,8 @@ namespace Voxie {
 		if (guiManager.setup(window))
 			glfwSetWindowShouldClose(window, true);
 		mainScene.setup();
+
+		processSceneDragging();
 
 		// render components
 		mainScene.render(scr_width, scr_height);
@@ -109,6 +116,36 @@ namespace Voxie {
 			FPS = frameCount;
 			frameCount = 0;
 			lastTime = currentTime;
+		}
+	}
+
+	void Renderer::processSceneDragging() {
+		static bool pressing = false;
+		static double lastX, lastY;
+
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_3) == GLFW_RELEASE)
+			pressing = false;
+
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_3) == GLFW_PRESS && !pressing) {
+			pressing = true;
+			glfwGetCursorPos(window, &lastX, &lastY);
+		}
+
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_3) == GLFW_PRESS && pressing) {
+			double xPos, yPos;
+			float xoffset, yoffset;
+
+			glfwGetCursorPos(window, &xPos, &yPos);
+
+			xoffset = xPos - lastX;
+			yoffset = yPos - lastY;
+			xoffset *= midButtonSpeed * deltaTime;
+			yoffset *= midButtonSpeed * deltaTime;
+
+			lastX = xPos;
+			lastY = yPos;
+
+			mainScene.camera.processMidButtonMovement(xoffset, yoffset);
 		}
 	}
 }

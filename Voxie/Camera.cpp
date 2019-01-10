@@ -69,6 +69,11 @@ namespace Voxie {
 			Zoom = 45.0f;
 	}
 
+	void Camera::processMidButtonMovement(float xoffset, float yoffset) {
+		Position -= Right * xoffset;
+		Position += Up * yoffset;
+	}
+
 	void Camera::updateCameraVectors() {
 		glm::vec3 front;
 		front.x = cos(glm::radians(Pitch)) * cos(glm::radians(Yaw));
