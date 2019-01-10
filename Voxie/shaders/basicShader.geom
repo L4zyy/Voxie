@@ -1,41 +1,67 @@
 #version 330 core
 layout (points) in;
-layout (triangle_strip, max_vertices = 8) out;
+layout (triangle_strip, max_vertices = 24) out;
 
 in VS_OUT {
 	vec3 color;
 } gs_in[];
 
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
 out vec3 fColor;
 
-void build_house(vec4 position) {
-	fColor = gs_in[0].color;
-	gl_Position = position + vec4(0.1f, 0.1f, 0.1f, 0.0f);
+const float size = 0.1f;
+
+void createVertex (vec3 offset) {
+	vec4 actualOffset = vec4(size * offset, 0.0f);
+	vec4 worldPosition = gl_in[0].gl_Position + actualOffset;
+	gl_Position = projection * view * model * worldPosition;
+	fColor = (offset + vec3(1.0f)) / 2;
 	EmitVertex();
-	gl_Position = position + vec4(0.1f, -0.1f, 0.1f, 0.0f);
-	fColor = vec3(1.0f, 0.0f, 0.0f);
-	EmitVertex();
-	gl_Position = position + vec4(-0.1f, 0.1f, 0.1f, 0.0f);
-	fColor = vec3(1.0f, 1.0f, 0.0f);
-	EmitVertex();
-	gl_Position = position + vec4(-0.1f, -0.1f, 0.1f, 0.0f);
-	fColor = vec3(1.0f, 0.0f, 1.0f);
-	EmitVertex();
-	gl_Position = position + vec4(0.1f, 0.1f, -0.1f, 0.0f);
-	fColor = vec3(0.0f, 0.0f, 1.0f);
-	EmitVertex();
-	gl_Position = position + vec4(0.1f, -0.1f, -0.1f, 0.0f);
-	fColor = vec3(0.0f, 1.0f, 1.0f);
-	EmitVertex();
-	gl_Position = position + vec4(-0.1f, 0.1f, -0.1f, 0.0f);
-	fColor = vec3(1.0f, 1.0f, 0.0f);
-	EmitVertex();
-	gl_Position = position + vec4(-0.1f, -0.1f, -0.1f, 0.0f);
-	fColor = vec3(0.0f, 1.0f, 1.0f);
-	EmitVertex();
-	EndPrimitive();
 }
 
 void main() {
-	build_house(gl_in[0].gl_Position);
+createVertex(vec3(-1.0, 1.0, 1.0));
+	createVertex(vec3(-1.0, -1.0, 1.0));
+	createVertex(vec3(1.0, 1.0, 1.0));
+	createVertex(vec3(1.0, -1.0, 1.0));
+	
+	EndPrimitive();
+	
+	createVertex(vec3(1.0, 1.0, 1.0));
+	createVertex(vec3(1.0, -1.0, 1.0));
+	createVertex(vec3(1.0, 1.0, -1.0));
+	createVertex(vec3(1.0, -1.0, -1.0));
+	
+	EndPrimitive();
+	
+	createVertex(vec3(1.0, 1.0, -1.0));
+	createVertex(vec3(1.0, -1.0, -1.0));
+	createVertex(vec3(-1.0, 1.0, -1.0));
+	createVertex(vec3(-1.0, -1.0, -1.0));
+	
+	EndPrimitive();
+	
+	createVertex(vec3(-1.0, 1.0, -1.0));
+	createVertex(vec3(-1.0, -1.0, -1.0));
+	createVertex(vec3(-1.0, 1.0, 1.0));
+	createVertex(vec3(-1.0, -1.0, 1.0));
+	
+	EndPrimitive();
+	
+	createVertex(vec3(1.0, 1.0, 1.0));
+	createVertex(vec3(1.0, 1.0, -1.0));
+	createVertex(vec3(-1.0, 1.0, 1.0));
+	createVertex(vec3(-1.0, 1.0, -1.0));
+	
+	EndPrimitive();
+	
+	createVertex(vec3(-1.0, -1.0, 1.0));
+	createVertex(vec3(-1.0, -1.0, -1.0));
+	createVertex(vec3(1.0, -1.0, 1.0));
+	createVertex(vec3(1.0, -1.0, -1.0));
+	
+	EndPrimitive();
 }

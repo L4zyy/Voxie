@@ -17,6 +17,8 @@ namespace Voxie {
 		GUIManager guiManager;
 		Scene mainScene;
 
+		float scr_width;
+		float scr_height;
 		float FPS;
 
 		Renderer();
@@ -24,6 +26,8 @@ namespace Voxie {
 		bool init();
 		bool render();
 		void cleanup();
+	private:
+		void updateFPS();
 	};
 }
 

@@ -1,23 +1,23 @@
 #ifndef GUI_MANAGER_H
 #define GUI_MANAGER_H
 
-#include "Global.h"
-#include "Scene.h"
-
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
 
+#include "Global.h"
+
 namespace Voxie {
+	class Renderer;
+
 	class GUIManager {
 	public:
-		Scene* mainScene;
-
+		Renderer* renderer;
 		bool arrowMode;
 
 		GUIManager();
 		bool init(GLFWwindow* window);
-		bool setup(GLFWwindow* window, float FPS);
+		bool setup(GLFWwindow* window);
 		void cleanup();
 		void render();
 	private:

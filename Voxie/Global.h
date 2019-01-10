@@ -17,6 +17,15 @@
 namespace Voxie {
 	const unsigned int SCR_WIDTH = 1280;
 	const unsigned int SCR_HEIGHT = 720;
+
+	enum Direction {
+		FORWARD,
+		BACKWARD,
+		LEFT,
+		RIGHT,
+		UP,
+		DOWN
+	};
 }
 
 #endif

@@ -5,15 +5,6 @@
 
 namespace Voxie {
 	// default values
-	enum Camera_Movement {
-		FORWARD,
-		BACKWARD,
-		LEFT,
-		RIGHT,
-		UP,
-		DOWN
-	};
-
 	const float YAW = -90.0f;
 	const float PITCH = 0.0f;
 	const float SPEED = 2.5f;
@@ -38,7 +29,7 @@ namespace Voxie {
 		Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw = YAW, float pitch = PITCH);
 
 		glm::mat4 GetViewMatrix();
-		void ProcessKeyboard(Camera_Movement direction, float deltaTime);
+		void ProcessKeyboard(Direction direction, float deltaTime);
 		void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
 		void ProcessMouseScroll(float yoffset);
 

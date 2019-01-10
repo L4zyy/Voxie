@@ -25,19 +25,22 @@ namespace Voxie {
 
 	void Scene::setup() {}
 
-	void Scene::render() {
+	void Scene::render(float width, float height) {
 		shader.use();
 
-		glm::mat4 model, view, projection;
-		model = glm::mat4(1.0f);
-		view = camera.GetViewMatrix();
-		projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		updateMVPMatrix(width, height);
 
-		shader.setMat4("model", model);
-		shader.setMat4("view", view);
-		shader.setMat4("projection", projection);
+		shader.setMat4("model", mvpMatrix.model);
+		shader.setMat4("view", mvpMatrix.view);
+		shader.setMat4("projection", mvpMatrix.projection);
 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_POINTS, 0, 1);
+	}
+
+	void Scene::updateMVPMatrix(float width, float height) {
+		mvpMatrix.model = glm::mat4(1.0f);
+		mvpMatrix.view = camera.GetViewMatrix();
+		mvpMatrix.projection = glm::perspective(glm::radians(camera.Zoom), width / height, 0.1f, 100.0f);
 	}
 }

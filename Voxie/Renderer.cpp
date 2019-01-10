@@ -4,11 +4,12 @@ namespace Voxie {
 	// variables
 	float deltaTime = 0.0f;
 	float lastFrameTime = 0.0f;
-	bool firstMouse = true;
-	float lastX = SCR_WIDTH / 2, lastY = SCR_HEIGHT / 2;
 
 	void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 		glViewport(0, 0, width, height);
+		Renderer* renderer = reinterpret_cast<Renderer*>(glfwGetWindowUserPointer(window));
+		renderer->scr_width = width;
+		renderer->scr_height = height;
 	}
 
 	void processInput(GLFWwindow* window, Scene& scene) {
@@ -30,7 +31,9 @@ namespace Voxie {
 	}
 
 	Renderer::Renderer() {
-		guiManager.mainScene = &mainScene;
+		guiManager.renderer = this;
+		scr_width = SCR_WIDTH;
+		scr_height = SCR_HEIGHT;
 	}
 
 	bool Renderer::init() {
@@ -41,13 +44,14 @@ namespace Voxie {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		// create window
-		window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Voxie", nullptr, nullptr);
+		window = glfwCreateWindow(scr_width, scr_height, "Voxie", nullptr, nullptr);
 		if (window == nullptr) {
 			std::cout << "Failed to create main window" << std::endl;
 			glfwTerminate();
 			return false;
 		}
 		glfwMakeContextCurrent(window);
+		glfwSetWindowUserPointer(window, this);
 		glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 		// init glad
@@ -76,7 +80,7 @@ namespace Voxie {
 		float currentFrameTime = glfwGetTime();
 		deltaTime = currentFrameTime - lastFrameTime;
 		lastFrameTime = currentFrameTime;
-		FPS = 100.0f;
+		updateFPS();
 
 		// process input
 		processInput(window, mainScene);
@@ -85,12 +89,12 @@ namespace Voxie {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// setup components
-		if (guiManager.setup(window, FPS))
+		if (guiManager.setup(window))
 			glfwSetWindowShouldClose(window, true);
 		mainScene.setup();
 
 		// render components
-		mainScene.render();
+		mainScene.render(scr_width, scr_height);
 		guiManager.render();
 
 		glfwSwapBuffers(window);
@@ -103,5 +107,19 @@ namespace Voxie {
 		guiManager.cleanup();
 
 		glfwTerminate();
+	}
+
+	void Renderer::updateFPS() {
+		static int frameCount = 0;
+		static float lastTime = 0.0f;
+		float currentTime = glfwGetTime();
+
+		frameCount++;
+
+		if (currentTime - lastTime >= 1.0f) {
+			FPS = frameCount;
+			frameCount = 0;
+			lastTime = currentTime;
+		}
 	}
 }

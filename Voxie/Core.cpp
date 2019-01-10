@@ -5,7 +5,7 @@ namespace Voxie {
 
 	bool Core::init() {
 		if (!renderer.init()) {
-			std::cout << "Failed to initialize Renderer" << std::endl;
+			std::cout << "Failed to initialize renderer" << std::endl;
 			return false;
 		}
 

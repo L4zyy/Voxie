@@ -1,4 +1,5 @@
 #include "GUIManager.h"
+#include "Renderer.h"
 
 namespace Voxie {
 	GUIManager::GUIManager() {}
@@ -17,7 +18,7 @@ namespace Voxie {
 	}
 
 	// return if app should close window
-	bool GUIManager::setup(GLFWwindow* window, float FPS) {
+	bool GUIManager::setup(GLFWwindow* window) {
 		static ImVec2 mainMenuBarSize;
 		static ImVec2 debugInfoSize;
 		static ImVec2 actionBarSize;
@@ -76,7 +77,7 @@ namespace Voxie {
 			// display FPS
 			int indent = 100;
 			ImGui::Indent(ImGui::GetIO().DisplaySize.x - indent);
-			ImGui::Text("FPS: %.1f", FPS);
+			ImGui::Text("FPS: %.1f", renderer->FPS);
 
 			mainMenuBarSize = ImGui::GetWindowSize();
 
@@ -117,8 +118,9 @@ namespace Voxie {
 		if (ImGui::Begin("Debug Info", open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav)) {
 			ImGui::Text("Debug Information");
 			ImGui::Separator();
+			ImGui::Text("Screen Scale: (%.1f, %.1f)", renderer->scr_width, renderer->scr_height);
 			ImGui::Text("Mouse Position: (%.1f, %.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-			ImGui::Text("Camera Position: (%.1f, %.1f, %.1f)", mainScene->camera.Position.x, mainScene->camera.Position.y, mainScene->camera.Position.z);
+			ImGui::Text("Camera Position: (%.1f, %.1f, %.1f)", renderer->mainScene.camera.Position.x, renderer->mainScene.camera.Position.y, renderer->mainScene.camera.Position.z);
 
 			if (ImGui::BeginPopupContextWindow()) {
 				if (ImGui::MenuItem("Top Left", nullptr, corner == 0)) corner = 0;
