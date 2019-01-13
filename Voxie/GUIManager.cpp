@@ -299,17 +299,21 @@ namespace Voxie {
 			ImGui::Spacing();
 
 			// properties
-			{
+			if (core->dataManager.currentVoxel) {
+				Voxel* currentVoxel = core->dataManager.currentVoxel;
 				if (ImGui::CollapsingHeader("Properties")) {
 					ImGui::Spacing();
 					ImGui::Text("Color: ");
 					ImGui::SameLine();
-					ImVec4 voxelColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-					if (ImGui::ColorEdit3("Properties##Color", (float*)&voxelColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_Float)) {}
+					ImVec4 voxelColor = ImVec4(currentVoxel->Color.x, currentVoxel->Color.y, currentVoxel->Color.z, 1.0f);
+					if (ImGui::ColorEdit3("Properties##Color", (float*)&voxelColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_Float)) {
+						currentVoxel->Color = glm::vec3(voxelColor.x, voxelColor.y, voxelColor.z);
+						core->renderer.mainScene.updateVoxels();
+					}
 
 					ImGui::Text("Position: ");
 					ImGui::SameLine();
-					ImGui::Text("Position");
+					ImGui::Text(getVec3String(currentVoxel->Position).c_str());
 				}
 			}
 
