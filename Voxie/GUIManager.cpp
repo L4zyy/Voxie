@@ -266,7 +266,7 @@ namespace Voxie {
 		if (ImGui::Begin("Tool Bar", open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav)) {
 			// color editor
 			{
-				static ImVec4 editorColor = ImColor(255, 255, 255);
+				ImVec4 editorColor = ImColor(core->dataManager.currentColor.x, core->dataManager.currentColor.y, core->dataManager.currentColor.z);
 				ImGui::ColorEdit3("Current Color", (float*)&editorColor, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_Float);
 
 				static bool initPalette = false;
@@ -288,7 +288,7 @@ namespace Voxie {
 					if ((i % (paletteColorNumber / 4)) != 0)
 						ImGui::SameLine();
 					if (ImGui::ColorButton("##palette", paletteColors[i], ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_NoPicker | ImGuiColorEditFlags_NoTooltip, ImVec2(20, 20)))
-						editorColor = paletteColors[i];
+						core->dataManager.currentColor = glm::vec3(paletteColors[i].x, paletteColors[i].y, paletteColors[i].z);
 
 					ImGui::PopID();
 				}
