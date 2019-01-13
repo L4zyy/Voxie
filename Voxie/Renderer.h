@@ -10,15 +10,19 @@
 #include "Scene.h"
 
 namespace Voxie {
+	class Core;
+
 	class Renderer {
 	public:
+		Core* core;
+
 		GLFWwindow * window;
 
 		GUIManager guiManager;
 		Scene mainScene;
 
-		float scr_width;
-		float scr_height;
+		int scr_width;
+		int scr_height;
 
 		float deltaTime;
 		float lastFrameTime;
@@ -27,10 +31,13 @@ namespace Voxie {
 
 		float midButtonSpeed;
 
+		glm::vec3 mouseRay;
+
 		Renderer();
 
 		bool init();
-		bool render();
+		void setup();
+		bool render(glm::vec3 currentMouseRay);
 		void cleanup();
 	private:
 		void updateFPS();

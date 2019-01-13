@@ -8,8 +8,7 @@
 
 namespace Voxie {
 
-	struct MVPMatrix {
-		glm::mat4 model;
+	struct VPMatrix {
 		glm::mat4 view;
 		glm::mat4 projection;
 	};
@@ -17,16 +16,18 @@ namespace Voxie {
 	class Scene {
 	public:
 		std::vector<Voxel> voxels;
+
 		Shader shader;
 		Camera camera;
 		unsigned int VAO, VBO;
-		MVPMatrix mvpMatrix;
+		VPMatrix vpMatrix;
 
 		Scene();
 		void init();
-		void setup();
-		void render(float width, float height);
-		void updateMVPMatrix(float width, float height);
+		void setup(int width, int height);
+		void updateVoxels();
+		void render();
+		void updateVPMatrix(int width, int height);
 	};
 }
 

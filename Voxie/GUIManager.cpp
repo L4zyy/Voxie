@@ -4,9 +4,9 @@
 namespace Voxie {
 	GUIManager::GUIManager() {
 		arrowMode = true;
-		camSpeed = 1.0f;
+		camSpeed = 10.0f;
 		eyeSpeed = 10.0f;
-		zoomSpeed = 5.0f;
+		zoomSpeed = 10.0f;
 	}
 
 	bool GUIManager::init(GLFWwindow* window) {
@@ -123,10 +123,17 @@ namespace Voxie {
 		if (ImGui::Begin("Debug Info", open, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav)) {
 			ImGui::Text("Debug Information");
 			ImGui::Separator();
+			ImGui::Text("--- IO ---");
+			ImGui::Separator();
 			ImGui::Text("Screen Scale: (%.1f, %.1f)", renderer->scr_width, renderer->scr_height);
 			ImGui::Text("Mouse Position: (%.1f, %.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
 			ImGui::Text("Camera Position: (%.1f, %.1f, %.1f)", renderer->mainScene.camera.Position.x, renderer->mainScene.camera.Position.y, renderer->mainScene.camera.Position.z);
 			ImGui::Text("Camera Direction: (%.1f, %.1f, %.1f)", renderer->mainScene.camera.Front.x, renderer->mainScene.camera.Front.y, renderer->mainScene.camera.Front.z);
+			ImGui::Text("Mouse Ray: (%.1f, %.1f, %.1f)", renderer->mouseRay.x, renderer->mouseRay.y, renderer->mouseRay.z);
+			ImGui::Separator();
+			ImGui::Text("--- Scene ---");
+			ImGui::Separator();
+			ImGui::Text("Voxel Count: %d", renderer->mainScene.voxels.size());
 
 			if (ImGui::BeginPopupContextWindow()) {
 				if (ImGui::MenuItem("Top Left", nullptr, corner == 0)) corner = 0;
@@ -164,7 +171,7 @@ namespace Voxie {
 			ImGui::ArrowButton("ArrowFront", ImGuiDir_Up);
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
 				if (arrowMode)
-					renderer->mainScene.camera.changePosition(FORWARD, camSpeed * renderer->deltaTime);
+					renderer->mainScene.camera.changePosition(UP, camSpeed * renderer->deltaTime);
 				else
 					renderer->mainScene.camera.changeDirection(UP, eyeSpeed * renderer->deltaTime);
 			}
@@ -190,7 +197,7 @@ namespace Voxie {
 			ImGui::ArrowButton("ArrowBack", ImGuiDir_Down);
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
 				if (arrowMode)
-					renderer->mainScene.camera.changePosition(BACKWARD, camSpeed * renderer->deltaTime);
+					renderer->mainScene.camera.changePosition(DOWN, camSpeed * renderer->deltaTime);
 				else
 					renderer->mainScene.camera.changeDirection(DOWN, eyeSpeed * renderer->deltaTime);
 			}
@@ -199,7 +206,7 @@ namespace Voxie {
 			ImGui::ArrowButton("ArrowUp", ImGuiDir_Up);
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
 				if (arrowMode)
-					renderer->mainScene.camera.changePosition(UP, camSpeed * renderer->deltaTime);
+					renderer->mainScene.camera.changePosition(FORWARD, camSpeed * renderer->deltaTime);
 				else
 					renderer->mainScene.camera.changeZoom(FORWARD, zoomSpeed * renderer->deltaTime);
 			}
@@ -207,7 +214,7 @@ namespace Voxie {
 			ImGui::ArrowButton("ArrowDown", ImGuiDir_Down);
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
 				if (arrowMode)
-					renderer->mainScene.camera.changePosition(DOWN, camSpeed * renderer->deltaTime);
+					renderer->mainScene.camera.changePosition(BACKWARD, camSpeed * renderer->deltaTime);
 				else
 					renderer->mainScene.camera.changeZoom(BACKWARD, zoomSpeed * renderer->deltaTime);
 			}

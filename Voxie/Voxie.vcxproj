@@ -121,7 +121,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="DataManager.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="GUIManager.cpp" />
     <ClCompile Include="includes\imgui\imgui.cpp" />
@@ -131,6 +133,7 @@
     <ClCompile Include="includes\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="includes\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MousePicker.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -138,7 +141,9 @@
     <ClCompile Include="Core.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DataManager.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="GUIManager.h" />
     <ClInclude Include="includes\imgui\imconfig.h" />
@@ -149,6 +154,7 @@
     <ClInclude Include="includes\imgui\imstb_rectpack.h" />
     <ClInclude Include="includes\imgui\imstb_textedit.h" />
     <ClInclude Include="includes\imgui\imstb_truetype.h" />
+    <ClInclude Include="MousePicker.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />

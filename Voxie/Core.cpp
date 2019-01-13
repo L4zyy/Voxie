@@ -1,11 +1,23 @@
 #include "Core.h"
 
 namespace Voxie {
-	Core::Core() {}
+	Core::Core() {
+		renderer.core = this;
+	}
 
 	bool Core::init() {
 		if (!renderer.init()) {
 			std::cout << "Failed to initialize renderer" << std::endl;
+			return false;
+		}
+
+		if (!dataManager.init(renderer.mainScene)) {
+			std::cout << "Failed to initialize data manager" << std::endl;
+			return false;
+		}
+
+		if (!mousePicker.init(renderer.window)) {
+			std::cout << "Failed to initialize mousepicker" << std::endl;
 			return false;
 		}
 
@@ -16,7 +28,9 @@ namespace Voxie {
 		static bool appShouldClose = false;
 
 		while (!appShouldClose) {
-			appShouldClose = renderer.render();
+			renderer.setup();
+			mousePicker.update(renderer.mainScene.vpMatrix.view, renderer.mainScene.vpMatrix.projection);
+			appShouldClose = renderer.render(mousePicker.getCurrentRay());
 		}
 	}
 

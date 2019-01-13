@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Core.h"
 
 namespace Voxie {
 	void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -13,9 +14,59 @@ namespace Voxie {
 	}
 	void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
 		Renderer* renderer = reinterpret_cast<Renderer*>(glfwGetWindowUserPointer(window));
-		renderer->mainScene.camera.changeZoom(yoffset >= 0 ? FORWARD : BACKWARD, abs(yoffset));
+		renderer->mainScene.camera.changeZoom(yoffset >= 0 ? FORWARD : BACKWARD, (float)abs(yoffset));
 	}
 	void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+		static bool cancelling = false;
+
+		// right click to cancel operation
+		if (button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS)
+			cancelling = true;
+
+		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS)
+			cancelling = false;
+
+		if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_RELEASE) {
+			if (!cancelling) {
+				Renderer* renderer = reinterpret_cast<Renderer*>(glfwGetWindowUserPointer(window));
+
+				// check intersection
+				int index = -1;
+				Direction direction = NONE;
+				float distance = MAX_DISTANCE;
+				Scene* pScene = &(renderer->mainScene);
+				glm::vec3 mouseRay = renderer->core->mousePicker.getCurrentRay();
+				glm::vec3 inverseRay = glm::vec3(1 / mouseRay.x, 1 / mouseRay.y, 1 / mouseRay.z);
+
+				for (size_t i = 0; i < pScene->voxels.size(); i++) {
+					float tmpDist;
+					if (pScene->voxels[i].boundingBox.intersect(pScene->camera, inverseRay, tmpDist)) {
+						if (tmpDist < distance) {
+							index = i;
+							distance = tmpDist;
+							direction = pScene->voxels[i].boundingBox.detectIntersectionFace(pScene->camera, mouseRay, distance);
+						}
+					}
+				}
+
+				if (index != -1) {
+					if (mods == GLFW_MOD_CONTROL) {
+						renderer->core->dataManager.deleteVoxel(*pScene, index);
+					}
+					else {
+						if (direction == NONE) {
+							std::cout << "Detected direction error!" << std::endl;
+						}
+						else {
+							glm::vec3 newPosition = pScene->voxels[index].Position + getDirectionVector(direction);
+							renderer->core->dataManager.addVoxel(*pScene, newPosition);
+						}
+					}
+				}
+			}
+
+			cancelling = false;
+		}
 	}
 
 	Renderer::Renderer() {
@@ -23,7 +74,9 @@ namespace Voxie {
 		scr_width = SCR_WIDTH;
 		scr_height = SCR_HEIGHT;
 
-		midButtonSpeed = 2.5f;
+		midButtonSpeed = 30.0f;
+
+		mouseRay = glm::vec3(0.0f, 0.0f, 0.0f);
 	}
 
 	bool Renderer::init() {
@@ -72,9 +125,9 @@ namespace Voxie {
 		return true;
 	}
 
-	bool Renderer::render() {
+	void Renderer::setup() {
 		// calculate delta time
-		float currentFrameTime = glfwGetTime();
+		float currentFrameTime = (float)glfwGetTime();
 		deltaTime = currentFrameTime - lastFrameTime;
 		lastFrameTime = currentFrameTime;
 		updateFPS();
@@ -85,12 +138,15 @@ namespace Voxie {
 		// setup components
 		if (guiManager.setup(window))
 			glfwSetWindowShouldClose(window, true);
-		mainScene.setup();
+		mainScene.setup(scr_width, scr_height);
 
 		processSceneDragging();
+	}
 
-		// render components
-		mainScene.render(scr_width, scr_height);
+	bool Renderer::render(glm::vec3 currentMouseRay) {
+		mouseRay = currentMouseRay;
+
+		mainScene.render();
 		guiManager.render();
 
 		glfwSwapBuffers(window);
@@ -108,12 +164,12 @@ namespace Voxie {
 	void Renderer::updateFPS() {
 		static int frameCount = 0;
 		static float lastTime = 0.0f;
-		float currentTime = glfwGetTime();
+		float currentTime = (float)glfwGetTime();
 
 		frameCount++;
 
 		if (currentTime - lastTime >= 1.0f) {
-			FPS = frameCount;
+			FPS = (float)frameCount;
 			frameCount = 0;
 			lastTime = currentTime;
 		}
@@ -137,8 +193,8 @@ namespace Voxie {
 
 			glfwGetCursorPos(window, &xPos, &yPos);
 
-			xoffset = xPos - lastX;
-			yoffset = yPos - lastY;
+			xoffset = float(xPos - lastX);
+			yoffset = float(yPos - lastY);
 			xoffset *= midButtonSpeed * deltaTime;
 			yoffset *= midButtonSpeed * deltaTime;
 
