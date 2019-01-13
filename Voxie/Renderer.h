@@ -31,8 +31,6 @@ namespace Voxie {
 
 		float midButtonSpeed;
 
-		glm::vec3 mouseRay;
-
 		Renderer();
 
 		bool init();

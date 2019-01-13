@@ -1,11 +1,10 @@
 #include "Core.h"
 
 namespace Voxie {
-	Core::Core() {
-		renderer.core = this;
-	}
+	Core::Core() {}
 
 	bool Core::init() {
+		renderer.core = this;
 		if (!renderer.init()) {
 			std::cout << "Failed to initialize renderer" << std::endl;
 			return false;

@@ -70,13 +70,10 @@ namespace Voxie {
 	}
 
 	Renderer::Renderer() {
-		guiManager.renderer = this;
 		scr_width = SCR_WIDTH;
 		scr_height = SCR_HEIGHT;
 
 		midButtonSpeed = 30.0f;
-
-		mouseRay = glm::vec3(0.0f, 0.0f, 0.0f);
 	}
 
 	bool Renderer::init() {
@@ -103,6 +100,7 @@ namespace Voxie {
 		}
 
 		// init GUI
+		guiManager.core = core;
 		if (!guiManager.init(window)) {
 			std::cout << "Failed to initialize GUI" << std::endl;
 			return false;
@@ -144,8 +142,6 @@ namespace Voxie {
 	}
 
 	bool Renderer::render(glm::vec3 currentMouseRay) {
-		mouseRay = currentMouseRay;
-
 		mainScene.render();
 		guiManager.render();
 

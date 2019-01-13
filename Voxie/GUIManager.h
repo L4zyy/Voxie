@@ -8,11 +8,11 @@
 #include "Global.h"
 
 namespace Voxie {
-	class Renderer;
+	class Core;
 
 	class GUIManager {
 	public:
-		Renderer* renderer;
+		Core* core;
 
 		bool arrowMode;
 

@@ -1,5 +1,5 @@
 #include "GUIManager.h"
-#include "Renderer.h"
+#include "Core.h"
 
 namespace Voxie {
 	GUIManager::GUIManager() {
@@ -82,7 +82,7 @@ namespace Voxie {
 			// display FPS
 			int indent = 100;
 			ImGui::Indent(ImGui::GetIO().DisplaySize.x - indent);
-			ImGui::Text("FPS: %.1f", renderer->FPS);
+			ImGui::Text("FPS: %.1f", core->renderer.FPS);
 
 			mainMenuBarSize = ImGui::GetWindowSize();
 
@@ -125,15 +125,16 @@ namespace Voxie {
 			ImGui::Separator();
 			ImGui::Text("--- IO ---");
 			ImGui::Separator();
-			ImGui::Text("Screen Scale: (%.1f, %.1f)", renderer->scr_width, renderer->scr_height);
+			ImGui::Text("Screen Scale: (%.1f, %.1f)", core->renderer.scr_width, core->renderer.scr_height);
 			ImGui::Text("Mouse Position: (%.1f, %.1f)", ImGui::GetIO().MousePos.x, ImGui::GetIO().MousePos.y);
-			ImGui::Text("Camera Position: (%.1f, %.1f, %.1f)", renderer->mainScene.camera.Position.x, renderer->mainScene.camera.Position.y, renderer->mainScene.camera.Position.z);
-			ImGui::Text("Camera Direction: (%.1f, %.1f, %.1f)", renderer->mainScene.camera.Front.x, renderer->mainScene.camera.Front.y, renderer->mainScene.camera.Front.z);
-			ImGui::Text("Mouse Ray: (%.1f, %.1f, %.1f)", renderer->mouseRay.x, renderer->mouseRay.y, renderer->mouseRay.z);
+			ImGui::Text("Camera Position: (%.1f, %.1f, %.1f)", core->renderer.mainScene.camera.Position.x, core->renderer.mainScene.camera.Position.y, core->renderer.mainScene.camera.Position.z);
+			ImGui::Text("Camera Direction: (%.1f, %.1f, %.1f)", core->renderer.mainScene.camera.Front.x, core->renderer.mainScene.camera.Front.y, core->renderer.mainScene.camera.Front.z);
+			glm::vec3 currentRay = core->mousePicker.getCurrentRay();
+			ImGui::Text("Mouse Ray: (%.1f, %.1f, %.1f)", currentRay.x, currentRay.y, currentRay.z);
 			ImGui::Separator();
 			ImGui::Text("--- Scene ---");
 			ImGui::Separator();
-			ImGui::Text("Voxel Count: %d", renderer->mainScene.voxels.size());
+			ImGui::Text("Voxel Count: %d", core->renderer.mainScene.voxels.size());
 
 			if (ImGui::BeginPopupContextWindow()) {
 				if (ImGui::MenuItem("Top Left", nullptr, corner == 0)) corner = 0;
@@ -171,17 +172,17 @@ namespace Voxie {
 			ImGui::ArrowButton("ArrowFront", ImGuiDir_Up);
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
 				if (arrowMode)
-					renderer->mainScene.camera.changePosition(UP, camSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changePosition(UP, camSpeed * core->renderer.deltaTime);
 				else
-					renderer->mainScene.camera.changeDirection(UP, eyeSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changeDirection(UP, eyeSpeed * core->renderer.deltaTime);
 			}
 			ImGui::Unindent();
 			ImGui::ArrowButton("ArrowLeft", ImGuiDir_Left);
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
 				if (arrowMode)
-					renderer->mainScene.camera.changePosition(LEFT, camSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changePosition(LEFT, camSpeed * core->renderer.deltaTime);
 				else
-					renderer->mainScene.camera.changeDirection(LEFT, eyeSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changeDirection(LEFT, eyeSpeed * core->renderer.deltaTime);
 			}
 			ImGui::SameLine();
 			ImGui::Dummy(ImVec2(arrowSize -12.0f, arrowSize));
@@ -189,34 +190,34 @@ namespace Voxie {
 			ImGui::ArrowButton("ArrowRight", ImGuiDir_Right);
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
 				if (arrowMode)
-					renderer->mainScene.camera.changePosition(RIGHT, camSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changePosition(RIGHT, camSpeed * core->renderer.deltaTime);
 				else
-					renderer->mainScene.camera.changeDirection(RIGHT, eyeSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changeDirection(RIGHT, eyeSpeed * core->renderer.deltaTime);
 			}
 			ImGui::Indent(arrowSize + 2.0f);
 			ImGui::ArrowButton("ArrowBack", ImGuiDir_Down);
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
 				if (arrowMode)
-					renderer->mainScene.camera.changePosition(DOWN, camSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changePosition(DOWN, camSpeed * core->renderer.deltaTime);
 				else
-					renderer->mainScene.camera.changeDirection(DOWN, eyeSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changeDirection(DOWN, eyeSpeed * core->renderer.deltaTime);
 			}
 			ImGui::Unindent();
 			ImGui::Indent(7.5f);
 			ImGui::ArrowButton("ArrowUp", ImGuiDir_Up);
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
 				if (arrowMode)
-					renderer->mainScene.camera.changePosition(FORWARD, camSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changePosition(FORWARD, camSpeed * core->renderer.deltaTime);
 				else
-					renderer->mainScene.camera.changeZoom(FORWARD, zoomSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changeZoom(FORWARD, zoomSpeed * core->renderer.deltaTime);
 			}
 			ImGui::SameLine();
 			ImGui::ArrowButton("ArrowDown", ImGuiDir_Down);
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0)) {
 				if (arrowMode)
-					renderer->mainScene.camera.changePosition(BACKWARD, camSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changePosition(BACKWARD, camSpeed * core->renderer.deltaTime);
 				else
-					renderer->mainScene.camera.changeZoom(BACKWARD, zoomSpeed * renderer->deltaTime);
+					core->renderer.mainScene.camera.changeZoom(BACKWARD, zoomSpeed * core->renderer.deltaTime);
 			}
 			ImGui::Unindent();
 

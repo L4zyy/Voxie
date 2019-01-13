@@ -8,6 +8,9 @@
 namespace Voxie {
 	class DataManager {
 	public:
+		Voxel* currentVoxel;
+		glm::vec3 currentColor;
+
 		DataManager();
 
 		bool init(Scene& scene);

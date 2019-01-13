@@ -1,7 +1,7 @@
 #include "BoundingBox.h"
 
 namespace Voxie {
-	float BoundingBox::intersectionThreshold = 0.000001f;
+	float BoundingBox::intersectionThreshold = 0.001f; // higher precision will cause face detaction return NONE
 
 	BoundingBox::BoundingBox(glm::vec3 bound0, glm::vec3 bound1) {
 		bounds[0] = bound0;
