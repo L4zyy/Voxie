@@ -22,6 +22,8 @@ namespace Voxie {
 		unsigned int VAO, VBO;
 		VPMatrix vpMatrix;
 
+		bool editMode;
+
 		Scene();
 		void init();
 		void setup(int width, int height);

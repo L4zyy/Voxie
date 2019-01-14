@@ -50,16 +50,24 @@ namespace Voxie {
 				}
 
 				if (index != -1) {
-					if (mods == GLFW_MOD_CONTROL) {
-						renderer->core->dataManager.deleteVoxel(*pScene, index);
+					// mouse ray hit object
+					if (!pScene->editMode) {
+						// view mode pick voxel
+						renderer->core->dataManager.currentVoxel = &renderer->mainScene.voxels[index];
 					}
 					else {
-						if (direction == NONE) {
-							std::cout << "Detected direction error!" << std::endl;
+						// edit mode edit voxel
+						if (mods == GLFW_MOD_CONTROL) {
+							renderer->core->dataManager.deleteVoxel(*pScene, index);
 						}
 						else {
-							glm::vec3 newPosition = pScene->voxels[index].Position + getDirectionVector(direction);
-							renderer->core->dataManager.addVoxel(*pScene, newPosition);
+							if (direction == NONE) {
+								std::cout << "Detected direction error!" << std::endl;
+							}
+							else {
+								glm::vec3 newPosition = pScene->voxels[index].Position + getDirectionVector(direction);
+								renderer->core->dataManager.addVoxel(*pScene, newPosition);
+							}
 						}
 					}
 				}

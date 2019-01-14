@@ -1,7 +1,9 @@
 #include "Scene.h"
 
 namespace Voxie {
-	Scene::Scene() {}
+	Scene::Scene() {
+		editMode = false;
+	}
 
 	void Scene::init() {
 		shader.init("shaders/basicShader.vert", "shaders/basicShader.frag", "shaders/basicShader.geom");
