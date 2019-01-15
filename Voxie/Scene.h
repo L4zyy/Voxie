@@ -8,9 +8,16 @@
 
 namespace Voxie {
 
+	static const float DEFAULT_BORDER_WIDTH = 0.08f;
+
 	struct VPMatrix {
 		glm::mat4 view;
 		glm::mat4 projection;
+	};
+
+	struct BorderInfo {
+		float width;
+		glm::vec3 color;
 	};
 
 	class Scene {
@@ -21,8 +28,10 @@ namespace Voxie {
 		Camera camera;
 		unsigned int VAO, VBO;
 		VPMatrix vpMatrix;
+		BorderInfo borderInfo;
 
 		bool editMode;
+		bool showBorder;
 
 		Scene();
 		void init();
@@ -30,6 +39,7 @@ namespace Voxie {
 		void updateVoxels();
 		void render();
 		void updateVPMatrix(int width, int height);
+		void updateBorderInfo(float width, glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f));
 	};
 }
 

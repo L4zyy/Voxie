@@ -10,55 +10,63 @@ uniform mat4 view;
 uniform mat4 projection;
 
 out vec3 fColor;
+out vec2 faceCoords;
 
-void createVertex (vec3 offset) {
+void createVertex (vec3 offset, vec2 facePos) {
 	vec4 actualOffset = vec4(offset, 0.0f);
 	vec4 worldPosition = gl_in[0].gl_Position + actualOffset;
 	gl_Position = projection * view * worldPosition;
 	fColor = gs_in[0].color;
+	faceCoords = facePos;
 	EmitVertex();
 }
 
 void main() {
-	createVertex(vec3(-0.5, 0.5, 0.5));
-	createVertex(vec3(-0.5, -0.5, 0.5));
-	createVertex(vec3(0.5, 0.5, 0.5));
-	createVertex(vec3(0.5, -0.5, 0.5));
+	// BACKWARD
+	createVertex(vec3(-0.5, 0.5, 0.5), vec2(-0.5, 0.5));
+	createVertex(vec3(-0.5, -0.5, 0.5), vec2(-0.5, -0.5));
+	createVertex(vec3(0.5, 0.5, 0.5), vec2(0.5, 0.5));
+	createVertex(vec3(0.5, -0.5, 0.5), vec2(0.5, -0.5));
 	
 	EndPrimitive();
 	
-	createVertex(vec3(0.5, 0.5, 0.5));
-	createVertex(vec3(0.5, -0.5, 0.5));
-	createVertex(vec3(0.5, 0.5, -0.5));
-	createVertex(vec3(0.5, -0.5, -0.5));
+	// RIGHT
+	createVertex(vec3(0.5, 0.5, 0.5), vec2(0.5, 0.5));
+	createVertex(vec3(0.5, -0.5, 0.5), vec2(-0.5, 0.5));
+	createVertex(vec3(0.5, 0.5, -0.5), vec2(0.5, -0.5));
+	createVertex(vec3(0.5, -0.5, -0.5), vec2(-0.5, -0.5));
 	
 	EndPrimitive();
 	
-	createVertex(vec3(0.5, 0.5, -0.5));
-	createVertex(vec3(0.5, -0.5, -0.5));
-	createVertex(vec3(-0.5, 0.5, -0.5));
-	createVertex(vec3(-0.5, -0.5, -0.5));
+	// FRONT
+	createVertex(vec3(0.5, 0.5, -0.5), vec2(0.5, 0.5));
+	createVertex(vec3(0.5, -0.5, -0.5), vec2(0.5, -0.5));
+	createVertex(vec3(-0.5, 0.5, -0.5), vec2(-0.5, 0.5));
+	createVertex(vec3(-0.5, -0.5, -0.5), vec2(-0.5, -0.5));
 	
 	EndPrimitive();
 	
-	createVertex(vec3(-0.5, 0.5, -0.5));
-	createVertex(vec3(-0.5, -0.5, -0.5));
-	createVertex(vec3(-0.5, 0.5, 0.5));
-	createVertex(vec3(-0.5, -0.5, 0.5));
+	// LEFT
+	createVertex(vec3(-0.5, 0.5, -0.5), vec2(0.5, -0.5));
+	createVertex(vec3(-0.5, -0.5, -0.5), vec2(-0.5, -0.5));
+	createVertex(vec3(-0.5, 0.5, 0.5), vec2(0.5, 0.5));
+	createVertex(vec3(-0.5, -0.5, 0.5), vec2(-0.5, 0.5));
 	
 	EndPrimitive();
 	
-	createVertex(vec3(0.5, 0.5, 0.5));
-	createVertex(vec3(0.5, 0.5, -0.5));
-	createVertex(vec3(-0.5, 0.5, 0.5));
-	createVertex(vec3(-0.5, 0.5, -0.5));
+	// UP
+	createVertex(vec3(0.5, 0.5, 0.5), vec2(0.5, 0.5));
+	createVertex(vec3(0.5, 0.5, -0.5), vec2(0.5, -0.5));
+	createVertex(vec3(-0.5, 0.5, 0.5), vec2(-0.5, 0.5));
+	createVertex(vec3(-0.5, 0.5, -0.5), vec2(-0.5, -0.5));
 	
 	EndPrimitive();
 	
-	createVertex(vec3(-0.5, -0.5, 0.5));
-	createVertex(vec3(-0.5, -0.5, -0.5));
-	createVertex(vec3(0.5, -0.5, 0.5));
-	createVertex(vec3(0.5, -0.5, -0.5));
+	// DOWN
+	createVertex(vec3(-0.5, -0.5, 0.5), vec2(-0.5, 0.5));
+	createVertex(vec3(-0.5, -0.5, -0.5), vec2(-0.5, -0.5));
+	createVertex(vec3(0.5, -0.5, 0.5), vec2(0.5, 0.5));
+	createVertex(vec3(0.5, -0.5, -0.5), vec2(0.5, -0.5));
 	
 	EndPrimitive();
 }

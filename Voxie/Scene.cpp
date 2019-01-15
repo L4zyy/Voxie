@@ -3,6 +3,8 @@
 namespace Voxie {
 	Scene::Scene() {
 		editMode = false;
+		showBorder = true;
+		updateBorderInfo(DEFAULT_BORDER_WIDTH);
 	}
 
 	void Scene::init() {
@@ -39,6 +41,12 @@ namespace Voxie {
 		shader.setMat4("view", vpMatrix.view);
 		shader.setMat4("projection", vpMatrix.projection);
 
+		if (showBorder)
+			shader.setFloat("borderWidth", borderInfo.width);
+		else
+			shader.setFloat("borderWidth", 0.0f);
+		shader.setVec3("borderColor", borderInfo.color);
+
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_POINTS, 0, voxels.size());
 	}
@@ -46,5 +54,10 @@ namespace Voxie {
 	void Scene::updateVPMatrix(int width, int height) {
 		vpMatrix.view = camera.GetViewMatrix();
 		vpMatrix.projection = glm::perspective(glm::radians(camera.Zoom), (float)width / (float)height, 0.1f, 100.0f);
+	}
+
+	void Scene::updateBorderInfo(float width, glm::vec3 color) {
+		borderInfo.width = width;
+		borderInfo.color = color;
 	}
 }

@@ -251,6 +251,10 @@ namespace Voxie {
 			if (ImGui::Button(core->renderer.mainScene.editMode ? "Edit Mode" : "View Mode")) {
 				core->renderer.mainScene.editMode = !core->renderer.mainScene.editMode;
 			}
+			ImGui::SameLine();
+			if (ImGui::Button(core->renderer.mainScene.showBorder ? "Hide Border" : "Show Border")) {
+				core->renderer.mainScene.showBorder = !core->renderer.mainScene.showBorder;
+			}
 
 			size = ImGui::GetWindowSize();
 
