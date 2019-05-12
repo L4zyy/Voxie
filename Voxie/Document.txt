@@ -1,0 +1,18 @@
+-----------
+|Shortcuts|
+-----------
+Global:
+Keyboard：
+    ESC: Quit Voxie
+Mouse:
+    Mid Button: Drag Scene
+
+View Mode:
+Mouse:
+    Left Button: Choose Voxel
+
+Edit Mode:
+Mouse:
+    Left Button: Add Voxel
+    Ctrl + Left Button: Remove Voxel
+

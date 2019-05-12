@@ -81,7 +81,7 @@ namespace Voxie {
 		scr_width = SCR_WIDTH;
 		scr_height = SCR_HEIGHT;
 
-		midButtonSpeed = 30.0f;
+		midButtonSpeed = 2.5f;
 	}
 
 	bool Renderer::init() {

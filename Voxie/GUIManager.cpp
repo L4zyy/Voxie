@@ -7,6 +7,14 @@ namespace Voxie {
 		camSpeed = 10.0f;
 		eyeSpeed = 10.0f;
 		zoomSpeed = 10.0f;
+
+		windowShouldClose = false;
+
+		displayDemowindow = false;
+		displayDebugInfo = true;
+		displayArrowPanel = true;
+		displayActionBar = true;
+		displayToolBar = true;
 	}
 
 	bool GUIManager::init(GLFWwindow* window) {
@@ -24,24 +32,35 @@ namespace Voxie {
 
 	// return if app should close window
 	bool GUIManager::setup(GLFWwindow* window) {
-		static ImVec2 mainMenuBarSize;
-		static ImVec2 debugInfoSize;
-		static ImVec2 actionBarSize;
-		static ImVec2 toolBarSize;
-
-		static bool windowShouldClose = false;
-
-		static bool displayDemowindow = false;
-		static bool displayDebugInfo = true;
-		static bool displayArrowPanel = true;
-		static bool displayActionBar = true;
-		static bool displayToolBar = true;
-
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
 		// imgui components
+		showMainMenu();
+		if (displayDemowindow) ImGui::ShowDemoWindow(&displayDemowindow);
+		if (displayDebugInfo) showDebugInfo(&displayDebugInfo, mainMenuBarSize.y + actionBarSize.y, debugInfoSize);
+		if (displayArrowPanel) showArrowPanel(&displayArrowPanel, mainMenuBarSize.y + actionBarSize.y);
+		if (displayActionBar) showActionBar(&displayActionBar, ImVec2(0.0f, mainMenuBarSize.y), actionBarSize);
+		if (displayToolBar) showToolBar(&displayToolBar, ImVec2(0.0f, mainMenuBarSize.y + actionBarSize.y), toolBarSize);
+
+		return windowShouldClose;
+	}
+
+	void GUIManager::cleanup() {
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+	}
+
+	void GUIManager::render() {
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+
+	void GUIManager::showMainMenu() {
+		static bool show_instructions = false;
+
 		if (ImGui::BeginMainMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("New", "Ctrl+N")) {
@@ -79,6 +98,13 @@ namespace Voxie {
 				ImGui::EndMenu();
 			}
 
+			if (ImGui::BeginMenu("Help")) {
+				if (ImGui::MenuItem("Instructions")) {
+					show_instructions = true;
+				}
+				ImGui::EndMenu();
+			}
+
 			// display FPS
 			int indent = 100;
 			ImGui::Indent(ImGui::GetIO().DisplaySize.x - indent);
@@ -88,28 +114,35 @@ namespace Voxie {
 
 			ImGui::EndMainMenuBar();
 		}
+		// deal with popups
+		if (show_instructions)
+			ImGui::OpenPopup("Instructions Popup");
+		if (ImGui::BeginPopupModal("Instructions Popup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+			ImGui::NewLine();
+			ImGui::Text("Global:");
+			ImGui::Text("Keyboard£º");
+			ImGui::Text("    ESC: Quit Voxie");
+			ImGui::Text("Mouse:");
+			ImGui::Text("    Mid Button: Drag Scene");
+			ImGui::Text("");
+			ImGui::Text("View Mode:");
+			ImGui::Text("Mouse:");
+			ImGui::Text("    Left Button: Choose Voxel");
+			ImGui::Text("");
+			ImGui::Text("Edit Mode:");
+			ImGui::Text("Mouse:");
+			ImGui::Text("    Left Button: Add Voxel");
+			ImGui::Text("    Ctrl + Left Button: Remove Voxel");
+			ImGui::NewLine();
+			if (ImGui::Button("OK", ImVec2(120, 0)))
+			{
+				ImGui::CloseCurrentPopup();
+			}
 
-		if (displayDemowindow) ImGui::ShowDemoWindow(&displayDemowindow);
-		if (displayDebugInfo) showDebugInfo(&displayDebugInfo, mainMenuBarSize.y + actionBarSize.y, debugInfoSize);
-		if (displayArrowPanel) showArrowPanel(&displayArrowPanel, mainMenuBarSize.y + actionBarSize.y);
-		if (displayActionBar) showActionBar(&displayActionBar, ImVec2(0.0f, mainMenuBarSize.y), actionBarSize);
-		if (displayToolBar) showToolBar(&displayToolBar, ImVec2(0.0f, mainMenuBarSize.y + actionBarSize.y), toolBarSize);
-
-		return windowShouldClose;
+			ImGui::EndPopup();
+			show_instructions = false;
+		}
 	}
-
-	void GUIManager::cleanup() {
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
-	}
-
-	void GUIManager::render() {
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	}
-
-
 	void GUIManager::showDebugInfo(bool* open, float viewY, ImVec2& size) {
 		static const float DISTANCE = 10.0f;
 		static int corner = 3;
